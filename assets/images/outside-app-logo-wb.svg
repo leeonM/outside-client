@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+    <!-- App Icon Background Square with rounded corners -->
+    <rect x="0" y="0" width="120" height="120" rx="28" fill="white"/>
+    
+    <!-- Minimal 'O' circle -->
+    <circle 
+        cx="60" 
+        cy="60" 
+        r="35" 
+        fill="none" 
+        stroke="black" 
+        stroke-width="10"/>
+</svg>
