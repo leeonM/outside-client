@@ -88,6 +88,7 @@ import { useLocalSearchParams } from "expo-router";
         );
   
         if (!response.ok) {
+          Alert.alert('Something went wrong, please try again later')
           throw new Error("Network response was not ok");
         }
   
@@ -107,7 +108,7 @@ import { useLocalSearchParams } from "expo-router";
       } catch (error) {
         console.error("Error:", error);
         // Optionally show error to user
-        Alert.alert("Error", "Failed to send message");
+        Alert.alert("Error", "Failed to send message, please try again later");
       } finally {
         setIsLoading(false);
       }
