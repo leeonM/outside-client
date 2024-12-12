@@ -86,7 +86,7 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'com.leeonm.client'
+    namespace "com.leeonm.client"
     defaultConfig {
         applicationId 'com.leeonm.client'
         minSdkVersion rootProject.ext.minSdkVersion

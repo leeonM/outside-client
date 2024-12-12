@@ -10,10 +10,10 @@ const ChatMessage = ({
     <View style={styles.row}>
       {role === Role.Bot ? (
         <View style={[styles.item]}>
-           <Image source={require("@/assets/images/bot-icon.png")} style={styles.avatar} />
+           <Image source={require("@/assets/images/boticon.png")} style={styles.avatar} />
         </View>
       ): (
-        <Image source={require("@/assets/images/outside-logo.png")} style={styles.avatar} />
+        <Image source={require("@/assets/images/outsidelogo.png")} style={styles.avatar} />
       )}
       <Text style={styles.text}>{content}</Text>
     </View>

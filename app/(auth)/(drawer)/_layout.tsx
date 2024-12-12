@@ -80,14 +80,6 @@ export const CustomDrawerContent = (props: any) => {
   return (
     <View style={{ flex: 1, marginTop: top }}>
       <View style={{ backgroundColor: "#fff", paddingBottom: 10 }}>
-        {/* <View style={styles.searchSection}>
-          <Ionicons style={styles.searchIcon} name="search" size={20} color={Colors.greyLight} />
-          <TextInput
-            style={styles.input}
-            placeholder="Search"
-            underlineColorAndroid="transparent"
-          />
-        </View> */}
       </View>
       <DrawerContentScrollView
         {...props}
@@ -150,14 +142,11 @@ export const CustomDrawerContent = (props: any) => {
         ))}
       </DrawerContentScrollView>
 
-      <View style={{ padding: 16, paddingBottom: bottom }}>
-        <Link href="/" asChild>
+      <View style={{ padding: 24, paddingBottom: bottom }}>
+      <Link href="/(auth)/(drawer)/settings" asChild>
           <TouchableOpacity style={styles.footer}>
-            <Image
-              source={require("@/assets/images/outside-logo.png")}
-              style={styles.avatar}
-            />
-            <Button title="Sign Out" onPress={()=> signOut()} color='#000' />
+            <Text style={styles.userName}>Settings</Text>
+            <Ionicons name="ellipsis-horizontal" size={24} color={Colors.greyLight} />
           </TouchableOpacity>
         </Link>
       </View>
@@ -192,7 +181,7 @@ const Layout = () => {
           drawerIcon: () => (
             <View style={[styles.item]}>
               <Image
-                source={require("@/assets/images/outside-logo-transparent.png")}
+                source={require("@/assets/images/outsidelogotransparent.png")}
                 style={styles.btnImage}
               />
             </View>
@@ -231,6 +220,16 @@ const Layout = () => {
               </TouchableOpacity>
             </Link>
           ),
+        }}
+      />
+
+<Drawer.Screen
+        name={"settings"}
+        options={{
+          title: 'Settings',
+          drawerItemStyle: {
+            display: "none",
+          }
         }}
       />
     </Drawer>

@@ -78,7 +78,7 @@ const Login = () => {
         </View>
       )}
 
-      <Image source={require('../assets/images/outside-logo-transparent.png')} style={styles.logo} />
+      <Image source={require('../assets/images/outsidelogotransparent.png')} style={styles.logo} />
 
       <Text style={styles.title}>{type === 'login' ? 'Welcome back' : 'Create your account'}</Text>
       <View style={{ marginBottom: 30 }}>
