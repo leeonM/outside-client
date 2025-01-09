@@ -81,7 +81,7 @@ const Login = () => {
       <Image source={require('../assets/images/outsidelogotransparent.png')} style={styles.logo} />
 
       <Text style={styles.title}>{type === 'login' ? 'Welcome back' : 'Create your account'}</Text>
-      <View style={{ marginBottom: 30 }}>
+      <View style={{ marginBottom: 5 }}>
         <TextInput
           autoCapitalize="none"
           placeholder="john@apple.com"
@@ -121,11 +121,11 @@ const styles = StyleSheet.create({
     width: 200,
     height: 60,
     alignSelf: 'center',
-    marginVertical: 80,
+    marginVertical: 20,
   },
   title: {
     fontSize: 30,
-    marginBottom: 20,
+    marginBottom: 10,
     fontWeight: 'bold',
     alignSelf: 'center',
   },

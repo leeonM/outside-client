@@ -26,6 +26,7 @@ import { addChat, addMessage, getMessages } from "@/utils/Database";
 import { useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 
+
 const ChatPage = () => {
   const { signOut } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
@@ -51,68 +52,78 @@ const ChatPage = () => {
   const handleSubmit = async () => {
     if (!input.trim() || isLoading) return;
 
-    setIsLoading(true);
+  setIsLoading(true);
 
-    // Add user message
-    const userMessage = {
-      id: Date.now().toString(),
-      content: input.trim(),
-      role: "user",
-    };
+  const userMessage = {
+    id: Date.now().toString(),
+    content: input.trim(),
+    role: "user",
+  };
 
-    let chatID;
+  let chatID;
 
-    if (messages.length === 0) {
-      const result = await addChat(db, userMessage.content);
-      chatID = result.lastInsertRowId;
-      setChatId(chatID.toString());
-      console.log("new chat added: ", chatID);
+  if (messages.length === 0) {
+    const result = await addChat(db, userMessage.content);
+    chatID = result.lastInsertRowId;
+    setChatId(chatID.toString());
+    addMessage(db, chatID, {
+      id: chatID?.toString(),
+      content: userMessage.content,
+      role: Role.User,
+    });
+  }
+  // @ts-ignore
+  setMessages((prev) => [...prev, userMessage]);
+  setInput(""); // Clear input
+
+  try {
+    const response = await fetch("https://outside-server-0kp4.onrender.com/api/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        messages: [...messages, userMessage],
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch result");
+    }
+
+    const data = await response.json();
+    const resultText = data; 
+
+    let partialMessage = "";
+    const displaySpeed = 10; // Adjust to control the "typing" speed
+    // @ts-ignore
+    setMessages((prev) => [...prev, { id: "loading", content: "", role: "assistant" }]);
+
+    for (let i = 0; i < resultText.length; i++) {
+      partialMessage += resultText[i];
+
+      // Update the UI progressively to simulate streaming
+      // @ts-ignore
+      setMessages((prev) => [
+        ...prev.slice(0, -1),
+        {
+          id: (Date.now() + 1).toString(),
+          content: partialMessage,
+          role: "assistant",
+        },
+      ]);
+
+      await new Promise((resolve) => setTimeout(resolve, displaySpeed));
+    }
+
+    // Save the final response to the database
+    if (chatID) {
       addMessage(db, chatID, {
         id: chatID?.toString(),
-        content: userMessage.content,
-        role: Role.User,
+        content: resultText,
+        role: Role.Bot,
       });
     }
-    // @ts-ignore
-    setMessages((prev) => [...prev, userMessage]);
-    setInput(""); // Clear input
-
-    try {
-      const response = await fetch(
-        "https://outside-server-0kp4.onrender.com/api/chat",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            messages: [...messages, userMessage],
-          }),
-        }
-      );
-
-      if (!response.ok) {
-        Alert.alert("Something went wrong, please try again later");
-        throw new Error("Network response was not ok");
-      }
-
-      const data = await response.json();
-      // Add assistant message
-      const assistantMessage = {
-        id: (Date.now() + 1).toString(),
-        // ts-ignore
-        content: data,
-        role: "assistant",
-      };
-      // @ts-ignore
-      setMessages((prev) => [...prev, assistantMessage]);
-      if (chatID) {
-        addMessage(db, chatID, {
-          id: chatID?.toString(),
-          content: assistantMessage.content,
-          role: Role.Bot,
-        });
-      }
     } catch (error) {
       console.error("Error:", error);
       // Optionally show error to user
@@ -135,36 +146,37 @@ const ChatPage = () => {
   );
 
   return (
-    <View style={styles.container}>
-      <FlatList
-        style={styles.messageContainer}
-        contentContainerStyle={[
-          styles.messageContent,
-          !messages.length && styles.emptyContent,
-        ]}
-        data={messages}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        ref={flatListRef}
-        ListEmptyComponent={ListEmptyComponent}
-        scrollEventThrottle={16}
-        maintainVisibleContentPosition={{
-          minIndexForVisible: 0,
-        }}
-        onContentSizeChange={() => {
-          if (messages.length > 0) {
-            flatListRef.current?.scrollToEnd({ animated: false });
-          }
-        }}
-      />
-      <KeyboardAvoidingView
-        keyboardVerticalOffset={70}
-        style={styles.inputContainer}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-      >
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={styles.container}
+      keyboardVerticalOffset={70}
+    >
+      <View style={styles.container}>
+        <FlatList
+          style={styles.messageContainer}
+          contentContainerStyle={[
+            styles.messageContent,
+            !messages.length && styles.emptyContent,
+          ]}
+          data={messages}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+          ref={flatListRef}
+          ListEmptyComponent={ListEmptyComponent}
+          scrollEventThrottle={16}
+          maintainVisibleContentPosition={{
+            minIndexForVisible: 0,
+            autoscrollToTopThreshold: 10,
+          }}
+          onContentSizeChange={() => {
+            if (messages.length > 0) {
+              flatListRef.current?.scrollToEnd({ animated: true });
+            }
+          }}
+        />
         <BlurView
           intensity={80}
-          style={{ paddingBottom: bottom, paddingTop: 10 }}
+          style={[styles.inputContainer, { paddingBottom: bottom, paddingTop: 10 }]}
           tint="extraLight"
         >
           <View style={styles.row}>
@@ -187,15 +199,13 @@ const ChatPage = () => {
               <Ionicons
                 name="send"
                 size={20}
-                color={
-                  isLoading || !input.trim() ? Colors.greyLight : Colors.grey
-                }
+                color={isLoading || !input.trim() ? Colors.greyLight : Colors.grey}
               />
             </TouchableOpacity>
           </View>
         </BlurView>
-      </KeyboardAvoidingView>
-    </View>
+      </View>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -209,8 +219,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
   },
   messageContent: {
-    paddingBottom: 100,
-    flexGrow: 1,
+    paddingBottom: 20,
   },
   image: {
     width: 130,
@@ -218,10 +227,8 @@ const styles = StyleSheet.create({
     resizeMode: "cover",
   },
   inputContainer: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
     width: "100%",
+    backgroundColor: "transparent",
   },
   row: {
     flexDirection: "row",
@@ -237,6 +244,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderColor: Colors.greyLight,
     backgroundColor: Colors.light,
+    fontSize: 20
   },
   disabledInput: {
     opacity: 0.5,

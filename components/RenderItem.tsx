@@ -1,4 +1,3 @@
-import Colors from "@/constants/Colors";
 import { StyleSheet, View } from "react-native";
 import LinkText from "./LinkText";
 
@@ -49,7 +48,7 @@ const renderItem = ({ item: m }: any) => (
       backgroundColor: "#F1F1F1",
       marginRight: "auto",
       borderTopLeftRadius: 4,
-    },
+    }
 });
 
 export default renderItem;

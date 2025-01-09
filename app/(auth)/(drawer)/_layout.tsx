@@ -28,6 +28,7 @@ import { Chat } from "@/utils/interfaces";
 import * as ContextMenu from "zeego/context-menu";
 import { useAuth } from "@clerk/clerk-expo";
 
+
 export const CustomDrawerContent = (props: any) => {
   const { bottom, top } = useSafeAreaInsets();
   const isDrawerOpen = useDrawerStatus() === "open";
@@ -264,6 +265,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 12,
+    marginBottom: 10
   },
   roundImage: {
     width: 30,

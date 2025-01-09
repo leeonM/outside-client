@@ -73,8 +73,9 @@ const LinkText = ({
 
     const styles = StyleSheet.create({
         messageText: {
-          fontSize: 16,
+          fontSize: 19,
           lineHeight: 22,
+          fontFamily: 'Roboto'
         },
         userText: {
           color: "#FFFFFF",

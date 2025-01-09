@@ -5,10 +5,11 @@ import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function SettingsPage() {
-  const { signOut, getToken,userId } = useAuth();
+  const { signOut, userId } = useAuth();
   const router = useRouter();
   const { top, bottom } = useSafeAreaInsets();
-  const SECRET_KEY=process.env.EXPO_PUBLIC_CLERK_SECRET_KEY
+  const SECRET_KEY=process.env.CLERK_SECRET_KEY
+  console.log(SECRET_KEY)
 
   const handleDeleteAccount = async () => {
     Alert.alert(
@@ -41,6 +42,7 @@ export default function SettingsPage() {
               }
             } catch (error) {
               Alert.alert("Error", "Something went wrong");
+
             }
           }
         }
@@ -126,4 +128,5 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     color: '#666',
   },
+  
 });
